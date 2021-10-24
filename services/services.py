@@ -6,22 +6,27 @@ from handlers.handlers import FilmsHtmlHandler, FilmHtmlHandler, WorkersHtmlHand
 
 
 class FilmsService():
-    def __init__(self, url, params=None, headers=None):
+    def __init__(self, url: str, params=None, headers=None, proxies=None):
         if params is None:
             params = {}
         if headers is None:
             headers = {}
-        self.parser = FilmsParser(url=url, params=params, headers=headers)
+        if proxies is None:
+            proxies = {}
+        self.parser = FilmsParser(url=url, params=params, headers=headers, )
         self.serializer = FilmsHtmlHandler()
 
 
 class FilmService():
-    def __init__(self, url, params=None, headers=None):
+    def __init__(self, url, params=None, headers=None, proxies=None):
+        print("Hello")
         if params is None:
             params = {}
         if headers is None:
             headers = {}
-        self.parser = FilmParser(url=url, params=params, headers=headers)
+        if proxies is None:
+            proxies = {}
+        self.parser = FilmParser(url=url, params=params, headers=headers, proxies=proxies)
         self.serializer = FilmHtmlHandler()
 
 
