@@ -86,6 +86,14 @@ def unsubscribe(message):
         bot.send_message(message.chat.id, "Вы не подписаны на обновления")
 
 
+@bot.message_handler(commands=['serials'])
+def start_message(message):
+    films = DB.get_all("films")[:10]
+    for film in films:
+        film_data = data_to_markdown(film)
+        bot.send_message(message.chat.id, film_data, parse_mode="markdown")
+
+
 @bot.message_handler(content_types=['text'])
 def text_input(message):
     if message.text == "Случайный сериал":
@@ -100,20 +108,10 @@ def text_input(message):
         bot.send_message(message.chat.id, "Введите одну из команд бота.\nЧтобы получисть список команд, введите /help")
 
 
-@bot.message_handler(commands=['serials'])
-def start_message(message):
-    films = DB.get_all("films")
-    for film in films:
-        film_data = f"*Название:* {film['name']}\n" \
-                    f"*Жанр:* {film['genres']}\n"\
-                    f"*Страна:* {film['country']}\n"\
-                    f"*Дата:* {film['date']}\n"\
-                    f"*Рейнтинг:* {film['rating']}\n"\
-                    f"[Подробнее]({film['film_url']})\n"
-        bot.send_message(message.chat.id, film_data, parse_mode="markdown")
 
+if __name__ == "__main__":
+    cur_time = int(time.mktime(datetime.now().timetuple()))
+    t = threading.Thread(target=periodic, args=(cur_time,))
+    t.start()
+    bot.polling()
 
-cur_time = int(time.mktime(datetime.now().timetuple()))
-t = threading.Thread(target=periodic, args=(cur_time,))
-t.start()
-bot.polling()
