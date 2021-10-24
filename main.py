@@ -1,9 +1,18 @@
-from services.services import FilmsService, FilmService
+from services.services import FilmsService
 from db.db import DataBase
 from time import sleep
 from pprint import pprint
+from dotenv import load_dotenv
+import os
 
-db = DataBase(host="localhost", port=27017, db_name="web_scrapping")
+load_dotenv()
+
+HOST = os.getenv("HOST")
+PORT = os.getenv("PORT")
+API_TOKEN = os.getenv("API_TOKEN")
+DB_NAME = os.getenv("DB_NAME")
+
+db = DataBase(host=HOST, port=int(PORT), db_name=DB_NAME)
 app = FilmsService(url="https://www.kinopoisk.ru/popular/films/country-1/",
                    params={"quick_filters": "serials", "tab": "all", "page": 1})
 

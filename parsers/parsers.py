@@ -1,6 +1,5 @@
 import requests
 from bs4 import BeautifulSoup
-import re
 
 
 class Parser():
@@ -49,34 +48,4 @@ class FilmsParser(Parser):
             return {"status": "success", "msg": films_html}
         else:
             error = "Не удалось получить список фильмов"
-            return {"status": "error", "msg": error}
-
-
-class FilmParser(Parser):
-    def get_film_from_page(self, film_id: int) -> dict:
-        self.url = f"https://www.kinopoisk.ru/series/{film_id}/"
-        html_data = self.get_page_data()
-        serial_div = html_data.find('div', {"data-test-id": "encyclopedic-table"})
-        print("Отладка", serial_div)
-        if serial_div:
-            serial_data = serial_div.findChildren(recursive=False)
-        else:
-            error = "Не удалось получить информацию о сериале"
-            return {"status": "error", "msg": error}
-        if serial_data:
-            return {"status": "success", "msg": serial_data}
-        else:
-            error = "Не удалось получить информацию о сериале"
-            return {"status": "error", "msg": error}
-
-
-class WorkersParser(Parser):
-    def get_workers_from_page(self, film_id):
-        self.url = f"https://www.kinopoisk.ru/film/{film_id}/cast/"
-        html_data = self.get_page_data()
-        workers_data = html_data.find_all('div', class_="actorInfo")
-        if workers_data:
-            return {"status": "success", "msg": (html_data, workers_data)}
-        else:
-            error = "Не удалось получить информацию о сериале"
             return {"status": "error", "msg": error}
