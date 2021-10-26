@@ -33,8 +33,8 @@ class FilmsParser(Parser):
                 pages = int(pages)
             except ValueError:
                 return {"status": "error", "msg": "Не удалось получить количество страниц"}
-            if pages > 2:
-                pages = 2
+            # if pages > 2:
+            #     pages = 2
             return {"status": "success", "msg": pages}
         else:
             return {"status": "error", "msg": "Не удалось получить количество страниц"}

@@ -7,6 +7,7 @@ from telebot import types
 from random import randrange
 import os
 from dotenv import load_dotenv
+from main import updater
 
 load_dotenv()
 HOST = os.getenv("HOST")
@@ -39,21 +40,18 @@ def data_to_markdown(film: dict):
     return film_markdown_data
 
 
-def periodic(timestamp: int):
+def periodic():
     while True:
-        print("Начало")
-        print("Подписчики", SUBS_IDS)
-        print("Время", timestamp)
-        time.sleep(60)
-        films = DB.filter_timestamp_gte(collection="films", timestamp=timestamp)
-        print(films)
-        timestamp = int(time.mktime(datetime.now().timetuple()))
+        print("Подписчики для рассылки:", SUBS_IDS)
+        films = updater()
         if films:
             for id in SUBS_IDS:
                 for film in films:
                     film_data = data_to_markdown(film)
                     bot.send_message(id, film_data, parse_mode="markdown")
+            time.sleep(60)
         else:
+            time.sleep(60)
             continue
 
 
@@ -70,7 +68,7 @@ def start_message(message):
 def subscribe(message):
     if message.chat.id not in SUBS_IDS:
         SUBS_IDS.append(message.chat.id)
-        print(SUBS_IDS)
+        # print(SUBS_IDS)
         bot.send_message(message.chat.id, "Вы успешно подписались на обновления")
     else:
         bot.send_message(message.chat.id, "Вы уже подписались на обновления")
@@ -80,7 +78,7 @@ def subscribe(message):
 def unsubscribe(message):
     if message.chat.id in SUBS_IDS:
         SUBS_IDS.remove(message.chat.id)
-        print(SUBS_IDS)
+        # print(SUBS_IDS)
         bot.send_message(message.chat.id, "Вы успешно отписались от обновлений", )
     else:
         bot.send_message(message.chat.id, "Вы не подписаны на обновления")
@@ -110,8 +108,7 @@ def text_input(message):
 
 
 if __name__ == "__main__":
-    cur_time = int(time.mktime(datetime.now().timetuple()))
-    t = threading.Thread(target=periodic, args=(cur_time,))
+    t = threading.Thread(target=periodic)
     t.start()
     bot.polling()
 
