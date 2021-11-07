@@ -6,6 +6,7 @@ import threading
 from telebot import types
 from random import randrange
 import os
+import requests
 from dotenv import load_dotenv
 from main import updater
 
@@ -26,17 +27,16 @@ COMMANDS_STR = f"*Доступные команды:*\n" \
                f"/subscribe - подписаться на обновления\n" \
                f"/unsubscribe - отписаться от обновлений\n"
 
-
 bot = telebot.TeleBot(API_TOKEN)
 
 
 def data_to_markdown(film: dict):
     film_markdown_data = f"*Название:* {film['name']}\n" \
-                f"*Жанр:* {film['genres']}\n" \
-                f"*Страна:* {film['country']}\n" \
-                f"*Дата:* {film['date']}\n" \
-                f"*Рейнтинг:* {film['rating']}\n" \
-                f"[Подробнее]({film['film_url']})\n"
+                         f"*Жанр:* {film['genres']}\n" \
+                         f"*Страна:* {film['country']}\n" \
+                         f"*Дата:* {film['date']}\n" \
+                         f"*Рейнтинг:* {film['rating']}\n" \
+                         f"[Подробнее]({film['film_url']})\n"
     return film_markdown_data
 
 
@@ -106,9 +106,10 @@ def text_input(message):
         bot.send_message(message.chat.id, "Введите одну из команд бота.\nЧтобы получисть список команд, введите /help")
 
 
-
 if __name__ == "__main__":
-    t = threading.Thread(target=periodic)
-    t.start()
-    bot.polling()
-
+    try:
+        t = threading.Thread(target=periodic)
+        t.start()
+        bot.polling()
+    except requests.exceptions.ConnectionError:
+        print("Проблемы с соединением")

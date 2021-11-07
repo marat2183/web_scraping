@@ -19,26 +19,31 @@ class Parser():
             self.proxies = proxies
 
     def get_page_data(self):
-        response = requests.get(url=self.url, params=self.params, headers=self.headers)
-        soup = BeautifulSoup(response.text, 'lxml')
+        try:
+            response = requests.get(url=self.url, params=self.params, headers=self.headers)
+            soup = BeautifulSoup(response.text, 'lxml')
+        except requests.exceptions.ConnectionError:
+            soup = ''
         return soup
 
 
 class FilmsParser(Parser):
     def get_page_nums(self) -> dict:
         soup = self.get_page_data()
-        pages = soup.find('div', class_="paginator").find_all('a', class_="paginator__page-number")[-1].text
-        if pages:
-            try:
-                pages = int(pages)
-            except ValueError:
+        if soup:
+            pages = soup.find('div', class_="paginator").find_all('a', class_="paginator__page-number")[-1].text
+            if pages:
+                try:
+                    pages = int(pages)
+                except ValueError:
+                    return {"status": "error", "msg": "Не удалось получить количество страниц"}
+                # if pages > 2:
+                #     pages = 2
+                return {"status": "success", "msg": pages}
+            else:
                 return {"status": "error", "msg": "Не удалось получить количество страниц"}
-            # if pages > 2:
-            #     pages = 2
-            return {"status": "success", "msg": pages}
         else:
             return {"status": "error", "msg": "Не удалось получить количество страниц"}
-
     def get_films_from_page(self, page_num: int) -> dict:
         self.params["page"] = page_num
         html_data = self.get_page_data()

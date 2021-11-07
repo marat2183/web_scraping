@@ -44,7 +44,7 @@ def get_all_films_data(max_page_num):
     all_films_list = []
     cur_page_num = 1
     while cur_page_num <= max_page_num:
-        sleep(5)
+        sleep(10)
         films_html_resp = app.parser.get_films_from_page(page_num=cur_page_num)
         if films_html_resp["status"] == "success":
             films = app.serializer.get_films(data=films_html_resp["msg"])
@@ -74,6 +74,7 @@ def updater():
             return []
     else:
         print(page_nums_resp["msg"])
+        return []
 
 
 
